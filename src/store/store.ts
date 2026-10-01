@@ -131,6 +131,10 @@ interface AppState {
   toggleStateCollapse: () => void;
   showLineNumbers: boolean;
   setShowLineNumbers: (value: boolean) => void;
+  editorFontSize: number;
+  setEditorFontSize: (value: number) => void;
+  editorWordWrap: boolean;
+  setEditorWordWrap: (value: boolean) => void;
   isSettingsOpen: boolean;
   setSettingsOpen: (value: boolean) => void;
   keyProtectionLevel: KeyProtectionLevel | null;
@@ -330,6 +334,31 @@ const getInitialLineNumbers = () => {
   return true; // Default to showing line numbers
 };
 
+const FONT_SIZE_OPTIONS = [12, 13, 14, 15, 16, 18, 20];
+
+const getInitialFontSize = () => {
+  if (typeof window !== "undefined") {
+    const saved = localStorage.getItem("editorFontSize");
+    if (saved !== null) {
+      const parsed = Number(saved);
+      if (FONT_SIZE_OPTIONS.includes(parsed)) {
+        return parsed;
+      }
+    }
+  }
+  return 14; // Default font size
+};
+
+const getInitialWordWrap = () => {
+  if (typeof window !== "undefined") {
+    const saved = localStorage.getItem("editorWordWrap");
+    if (saved !== null) {
+      return saved === "true";
+    }
+  }
+  return true; // Default to word wrap enabled
+};
+
 const useAppStore = create<AppState>()(
   immer(
     devtools((set, get) => {
@@ -371,6 +400,8 @@ const useAppStore = create<AppState>()(
         isResponseCollapsed: false,
         isStateCollapsed: false,
         showLineNumbers: getInitialLineNumbers(),
+        editorFontSize: getInitialFontSize(),
+        editorWordWrap: getInitialWordWrap(),
         isSettingsOpen: false,
         keyProtectionLevel: null,
         isLogicFeatureEnabled:
@@ -430,6 +461,18 @@ const useAppStore = create<AppState>()(
             localStorage.setItem("showLineNumbers", String(value));
           }
           set({ showLineNumbers: value });
+        },
+        setEditorFontSize: (value: number) => {
+          if (typeof window !== "undefined") {
+            localStorage.setItem("editorFontSize", String(value));
+          }
+          set({ editorFontSize: value });
+        },
+        setEditorWordWrap: (value: boolean) => {
+          if (typeof window !== "undefined") {
+            localStorage.setItem("editorWordWrap", String(value));
+          }
+          set({ editorWordWrap: value });
         },
         setSettingsOpen: (value: boolean) => set({ isSettingsOpen: value }),
         setEditorsVisible: (value) => {

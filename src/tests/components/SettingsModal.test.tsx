@@ -6,6 +6,8 @@ import SettingsModal from '../../components/SettingsModal';
 // Shared mocks so tests can assert on calls made by the component
 const mocks = vi.hoisted(() => ({
   setDesignV2Enabled: vi.fn(),
+  setEditorFontSize: vi.fn(),
+  setEditorWordWrap: vi.fn(),
 }));
 
 // Mock the store - use inline functions to avoid hoisting issues
@@ -16,6 +18,10 @@ vi.mock('../../store/store', () => {
       setSettingsOpen: vi.fn(),
       showLineNumbers: true,
       setShowLineNumbers: vi.fn(),
+      editorFontSize: 14,
+      setEditorFontSize: mocks.setEditorFontSize,
+      editorWordWrap: true,
+      setEditorWordWrap: mocks.setEditorWordWrap,
       textColor: '#121212',
       backgroundColor: '#ffffff',
       toggleDarkMode: vi.fn(),
@@ -132,5 +138,42 @@ describe('SettingsModal', () => {
 
     expect(screen.getByTestId('ai-config-section')).toBeInTheDocument();
     expect(screen.getByText('AI Configuration Content')).toBeInTheDocument();
+  });
+
+  // Font Size setting tests
+  it('renders the Font Size setting', () => {
+    render(<SettingsModal />);
+
+    expect(screen.getByText('Font Size')).toBeInTheDocument();
+    expect(screen.getByText('Adjust the font size in code editors')).toBeInTheDocument();
+  });
+
+  it('renders the font size select with default value', () => {
+    render(<SettingsModal />);
+
+    // Ant Design Select renders the selected value as display text
+    expect(screen.getByText('14px')).toBeInTheDocument();
+  });
+
+  // Word Wrap setting tests
+  it('renders the Word Wrap setting', () => {
+    render(<SettingsModal />);
+
+    expect(screen.getByText('Word Wrap')).toBeInTheDocument();
+    expect(screen.getByText('Wrap long lines in code editors')).toBeInTheDocument();
+  });
+
+  it('renders the word wrap toggle switch', () => {
+    render(<SettingsModal />);
+
+    const toggle = screen.getByRole('switch', { name: /toggle word wrap/i });
+    expect(toggle).toBeInTheDocument();
+  });
+
+  it('word wrap toggle is checked when editorWordWrap is true', () => {
+    render(<SettingsModal />);
+
+    const toggle = screen.getByRole('switch', { name: /toggle word wrap/i });
+    expect(toggle).toBeChecked();
   });
 });

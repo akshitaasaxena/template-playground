@@ -26,18 +26,21 @@ export default function JSONEditor({
   const { handleSelection, MenuComponent } = useCodeSelection("json");
   const internalEditorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
 
-  const { aiConfig, showLineNumbers } = useAppStore((state) => ({
+  const { aiConfig, showLineNumbers, editorFontSize, editorWordWrap } = useAppStore((state) => ({
     aiConfig: state.aiConfig,
     showLineNumbers: state.showLineNumbers,
+    editorFontSize: state.editorFontSize,
+    editorWordWrap: state.editorWordWrap,
   }));
 
   const themeName = useThemeName();
 
   const options: monaco.editor.IStandaloneEditorConstructionOptions = useMemo(() => ({
     minimap: { enabled: false },
-    wordWrap: "on",
+    wordWrap: editorWordWrap ? "on" : "off",
     automaticLayout: true,
     scrollBeyondLastLine: false,
+    fontSize: editorFontSize,
     lineNumbers: showLineNumbers ? 'on' : 'off',
     readOnly,
     inlineSuggest: {
@@ -56,7 +59,7 @@ export default function JSONEditor({
     acceptSuggestionOnCommitCharacter: false,
     acceptSuggestionOnEnter: "off",
     tabCompletion: "off",
-  }), [aiConfig?.enableInlineSuggestions, showLineNumbers, readOnly]);
+  }), [aiConfig?.enableInlineSuggestions, showLineNumbers, editorFontSize, editorWordWrap, readOnly]);
 
 
   const handleEditorWillMount = (monacoInstance: typeof monaco) => {
